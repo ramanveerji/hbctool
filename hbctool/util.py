@@ -219,7 +219,7 @@ def read(f, format):
     bits = format[1]
     n = format[2]
     r = []
-    for i in range(n):
+    for _ in range(n):
         if type == "uint":
             r.append(readuint(f, bits=bits))
         elif type == "int":
@@ -228,11 +228,8 @@ def read(f, format):
             r.append(readbits(f, bits=bits))
         else:
             raise Exception(f"Data type {type} is not supported.")
-    
-    if len(r) == 1:
-        return r[0]
-    else:
-        return r
+
+    return r[0] if len(r) == 1 else r
 
 # Write
 def writeuint(f, v, bits=64, signed=False):

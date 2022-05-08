@@ -29,17 +29,15 @@ from hbctool import metadata, hbc, hasm
 
 def disasm(hbcfile, hasmpath):
     print(f"[*] Disassemble '{hbcfile}' to '{hasmpath}' path")
-    f = open(hbcfile, "rb")
-    hbco = hbc.load(f)
-    f.close()
-
+    with open(hbcfile, "rb") as f:
+        hbco = hbc.load(f)
     header = hbco.getHeader()
     sourceHash = bytes(header["sourceHash"]).hex()
     version = header["version"]
     print(f"[*] Hermes Bytecode [ Source Hash: {sourceHash}, HBC Version: {version} ]")
 
     hasm.dump(hbco, hasmpath)
-    print(f"[*] Done")
+    print("[*] Done")
 
 def asm(hasmpath, hbcfile):
     print(f"[*] Assemble '{hasmpath}' to '{hbcfile}' path")
@@ -50,10 +48,9 @@ def asm(hasmpath, hbcfile):
     version = header["version"]
     print(f"[*] Hermes Bytecode [ Source Hash: {sourceHash}, HBC Version: {version} ]")
 
-    f = open(hbcfile, "wb")
-    hbc.dump(hbco, f)
-    f.close()
-    print(f"[*] Done")
+    with open(hbcfile, "wb") as f:
+        hbc.dump(hbco, f)
+    print("[*] Done")
 
 def main():
     args = docopt(__doc__, version=f"{metadata.project} {metadata.version}")
