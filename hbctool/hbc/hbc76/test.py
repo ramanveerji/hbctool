@@ -68,26 +68,19 @@ class TestHBC76(unittest.TestCase):
             self.assertEqual(assemble(disassemble(bc)), bc)
 class TestParser76(unittest.TestCase):
     def test_hbc(self):
-        f = open(f"{basepath}/example/index.android.bundle", "rb")
-        hbc = hbcl.load(f)
-        f.close()
-        f = open("/tmp/hbctool_test.android.bundle", "wb")
-        hbcl.dump(hbc, f)
-        f.close()
-
-        f = open("hbc/hbc76/example/index.android.bundle", "rb")
-        a = f.read()
-        f.close()
-        f = open("/tmp/hbctool_test.android.bundle", "rb")
-        b = f.read()
-        f.close()
-
+        with open(f"{basepath}/example/index.android.bundle", "rb") as f:
+            hbc = hbcl.load(f)
+        with open("/tmp/hbctool_test.android.bundle", "wb") as f:
+            hbcl.dump(hbc, f)
+        with open("hbc/hbc76/example/index.android.bundle", "rb") as f:
+            a = f.read()
+        with open("/tmp/hbctool_test.android.bundle", "rb") as f:
+            b = f.read()
         self.assertEqual(a, b)
 
     def test_hasm(self):
-        f = open(f"{basepath}/example/index.android.bundle", "rb")
-        a = hbcl.load(f)
-        f.close()
+        with open(f"{basepath}/example/index.android.bundle", "rb") as f:
+            a = hbcl.load(f)
         hasm.dump(a, "/tmp/hbctool_test", force=True)
         b = hasm.load("/tmp/hbctool_test")
 

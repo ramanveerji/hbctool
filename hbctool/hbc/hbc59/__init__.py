@@ -15,10 +15,7 @@ TagMask = 0x70
 
 class HBC59:
     def __init__(self, f=None):
-        if f:
-            self.obj = parse(f)
-        else:
-            self.obj = None
+        self.obj = parse(f) if f else None
 
     def export(self, f):
         export(self.getObj(), f)

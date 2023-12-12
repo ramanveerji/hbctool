@@ -30,23 +30,19 @@ def align(f):
     f.pad(BYTECODE_ALIGNMENT)
 
 def parse(f):
-    obj = {}
-
     # Segment 1: Header
-    header = {}
-    for key in headerS:
-        header[key] = read(f, headerS[key])
-    
-    obj["header"] = header
+    header = {key: read(f, headerS[key]) for key in headerS}
+    obj = {"header": header}
     align(f)
-    
+
     # Segment 2: Function Header
     functionHeaders = []
-    for i in range(header["functionCount"]):
-        functionHeader = {}
-        for key in smallFunctionHeaderS:
-            functionHeader[key] = read(f, smallFunctionHeaderS[key])
-        
+    for _ in range(header["functionCount"]):
+        functionHeader = {
+            key: read(f, smallFunctionHeaderS[key])
+            for key in smallFunctionHeaderS
+        }
+
         if (functionHeader["flags"] >> 5) & 1:
             functionHeader["small"] = copy.deepcopy(functionHeader)
             saved_pos = f.tell()
@@ -56,7 +52,7 @@ def parse(f):
                 functionHeader[key] = read(f, functionHeaderS[key])
 
             f.seek(saved_pos)
-            
+
         functionHeaders.append(functionHeader)
 
     obj["functionHeaders"] = functionHeaders
@@ -64,29 +60,26 @@ def parse(f):
 
     # Segment 3: StringKind
     # FIXME : Do nothing just skip
-    stringKinds = []
-    for _ in range(header["stringKindCount"]):
-        stringKinds.append(readuint(f, bits=32))
-
+    stringKinds = [readuint(f, bits=32) for _ in range(header["stringKindCount"])]
     obj["stringKinds"] = stringKinds
     align(f)
 
     # Segment 3: IdentifierHash
     # FIXME : Do nothing just skip
-    identifierHashes = []
-    for _ in range(header["identifierCount"]):
-        identifierHashes.append(readuint(f, bits=32))
-    
+    identifierHashes = [
+        readuint(f, bits=32) for _ in range(header["identifierCount"])
+    ]
+
     obj["identifierHashes"] = identifierHashes
     align(f)
 
     # Segment 4: StringTable
     stringTableEntries = []
     for _ in range(header["stringCount"]):
-        stringTableEntry = {}
-        for key in stringTableEntryS:
-            stringTableEntry[key] = read(f, stringTableEntryS[key])
-        
+        stringTableEntry = {
+            key: read(f, stringTableEntryS[key]) for key in stringTableEntryS
+        }
+
         stringTableEntries.append(stringTableEntry)
 
     obj["stringTableEntries"] = stringTableEntries
@@ -95,12 +88,13 @@ def parse(f):
     # Segment 5: StringTableOverflow
     stringTableOverflowEntries = []
     for _ in range(header["overflowStringCount"]):
-        stringTableOverflowEntry = {}
-        for key in overflowStringTableEntryS:
-            stringTableOverflowEntry[key] = read(f, overflowStringTableEntryS[key])
-        
+        stringTableOverflowEntry = {
+            key: read(f, overflowStringTableEntryS[key])
+            for key in overflowStringTableEntryS
+        }
+
         stringTableOverflowEntries.append(stringTableOverflowEntry)
-    
+
     obj["stringTableOverflowEntries"] = stringTableOverflowEntries
     align(f)
 
@@ -135,15 +129,15 @@ def parse(f):
     # Segment 11: RegExpTable
     regExpTable = []
     for _ in range(header["regExpCount"]):
-        regExpEntry = {}
-        for key in regExpTableEntryS:
-            regExpEntry[key] = read(f, regExpTableEntryS[key])
-        
+        regExpEntry = {
+            key: read(f, regExpTableEntryS[key]) for key in regExpTableEntryS
+        }
+
         regExpTable.append(regExpEntry)
 
     obj["regExpTable"] = regExpTable
     align(f)    
-    
+
     # Segment 12: RegExpStorage
     regExpStorageS[2] = header["regExpStorageSize"]
     regExpStorage = read(f, regExpStorageS)
@@ -154,10 +148,10 @@ def parse(f):
     # Segment 13: CJSModuleTable
     cjsModuleTable = []
     for _ in range(header["cjsModuleCount"]):
-        cjsModuleEntry = {}
-        for key in cjsModuleTableS:
-            cjsModuleEntry[key] = read(f, cjsModuleTableS[key])
-        
+        cjsModuleEntry = {
+            key: read(f, cjsModuleTableS[key]) for key in cjsModuleTableS
+        }
+
         cjsModuleTable.append(cjsModuleEntry)
 
     obj["cjsModuleTable"] = cjsModuleTable
